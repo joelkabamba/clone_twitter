@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Redirect;
 
 class TweetController extends Controller
 {
-    public function index(){
-
+    public function index()
+    {
         $tweets = Tweet::with([
             'user' => fn ($query) => $query->withCount([
                 'followers as is_followed' => fn($query) 
@@ -39,8 +39,8 @@ class TweetController extends Controller
         ]);
     }
 
-    public function store(Request $request){
-
+    public function store(Request $request)
+    {
         $request->validate([
             'content' => ['required','max:280'],
             'user_id' => ['exists:users,id']
@@ -52,6 +52,25 @@ class TweetController extends Controller
         ]);
 
         return Redirect::route('tweets.index');
+    }
+
+    public function profile(User $user)
+    {
+        $profileUser = $user->loadCount([
+            'followings as is_following_you' => 
+                fn($q) => $q->where('following_id', auth()->user()->id)
+                ->withCasts(['is_following_you' => 'boolean']),
+            'followers as is_followed' => 
+                fn($q) => $q->where('follower_id', auth()->user()->id)
+                ->withCasts(['is_followed' => 'boolean'])
+        ]);
+
+        $tweets = $user->tweets;
+
+        return Inertia::render('Tweets/Profile', [
+            'profileUser' => $profileUser,
+            'tweets' => $tweets
+        ]);
     }
 
     public function follows(User $user)

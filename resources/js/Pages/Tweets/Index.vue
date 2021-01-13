@@ -14,7 +14,7 @@
                     <img :src="tweet.user.profile_photo_url" alt="" class="h-16 w-16 object-cover rounded-full">
                     <div class="flex flex-col w-2/3">
                         <div>
-                            <a href="#" class="text-sm text-gray-900 font-bold hover:text-blue-400">
+                            <a :href="`/profile/${tweet.user.name}`" class="text-sm text-gray-900 font-bold hover:text-blue-400">
                                 {{ tweet.user.name }}
                             </a>
                             <span class="font-thin text-gray-400">
